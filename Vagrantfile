@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
         sh.path = "configura-host.sh"
       end
       master.vm.provision "shell", path: "dns.sh"
+      master.vm.provision "shell", path: "containerd-install.sh"
     end
 
     config.vm.define "node1" do |node1|
@@ -44,6 +45,7 @@ Vagrant.configure("2") do |config|
         sh.path = "configura-host.sh"
       end
       node1.vm.provision "shell", path: "dns.sh"
+      node1.vm.provision "shell", path: "containerd-install.sh"
     end
 
     config.vm.define "node2" do |node2|
@@ -60,6 +62,7 @@ Vagrant.configure("2") do |config|
         sh.path = "configura-host.sh"
       end
       node2.vm.provision "shell", path: "dns.sh"
+      node2.vm.provision "shell", path: "containerd-install.sh"
     end
-    
+
 end
