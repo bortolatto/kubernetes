@@ -17,19 +17,34 @@ Vagrant.configure("2") do |config|
     config.vm.define "master" do |master|
       master.vm.box = "ubuntu/focal64"
       master.vm.network "private_network", ip: "192.168.56.2"
-      master.vm.hostname = "master"
+      master.vm.hostname = "kubemaster"
+      master.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.name = "kubemaster"
+        vb.cpus = 2
+      end
     end
 
     config.vm.define "node1" do |node1|
       node1.vm.box = "ubuntu/focal64"
       node1.vm.network "private_network", ip: "192.168.56.3"
-      node1.vm.hostname = "node1"
+      node1.vm.hostname = "kubenode1"
+      node1.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.name = "kubenode1"
+        vb.cpus = 2
+      end
     end
 
     config.vm.define "node2" do |node2|
       node2.vm.box = "ubuntu/focal64"
       node2.vm.network "private_network", ip: "192.168.56.4"
-      node2.vm.hostname = "node2"
+      node2.vm.hostname = "kubenode2"
+      node2.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.name = "kubenode2"
+        vb.cpus = 2
+      end
     end
 
   # Disable automatic box update checking. If you disable this, then
