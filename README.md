@@ -41,6 +41,7 @@
 ---
 
 # Problemas enfrentados:
+## Erro ao efetuar join no master node
 * No momento de fazer o join dos worker nodes com o master node, o serviço do kubelet não estava rodando por ausência do arquivo `/var/lib/kubelet/config.yaml`.
 Lendo a documentação oficial, este arquivo só é criado ao rodar o comando kubeadm init (que teoricamente só deveria ser executado no node master), como pode ser visto no seguinte output:
 ```
@@ -55,3 +56,36 @@ E1012 14:39:46.136969   44102 memcache.go:265] couldn't get current server API g
 
 ## Solução encontrada
 O ip utilizado para iniciar a API no node master estava conflitando com o servidor dhcp que é habilitado por padrão no virtualbox. No caso o ip do DHCP é 192.168.56.2. Ao escolher um IP diferente para o node master (192.168.56.32), o worker node conseguiu juntar-se ao cluster normalmente.
+
+---
+
+## Erro ao rodar comandos como `exec` ou `logs`
+Mesmo que os pods sejam criados com sucesso, não era possível verificar os logs do pod pois apresentava o seguinte erro:
+```
+vagrant@kubenode01:~$ kubectl logs nginx
+Error from server (NotFound): the server could not find the requested resource ( pods/log nginx)
+```
+
+## Solução encontrada
+Por padrão o kubelet não configura o ip do worker node para que o api server consiga recuperar os resources. 
+Resumindo, em cada worker node, adicionar a seguinte variável de ambiente no arquivo de configuração do systemd (kubelet):
+
+```
+sudo vi /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+```
+
+`Environment="KUBELET_EXTRA_ARGS=--node-ip=<ip do worker node>"`
+
+Após isso, fazer o reload/restart do systemd:
+```
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
+
+PS: Também fiz isso no node master, com o ip do node master
+
+**Links sobre este problema:**
+
+https://github.com/kubernetes/kubernetes/issues/60835
+
+https://medium.com/@joatmon08/playing-with-kubeadm-in-vagrant-machines-part-2-bac431095706
