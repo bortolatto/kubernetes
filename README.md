@@ -89,3 +89,10 @@ PS: Também fiz isso no node master, com o ip do node master
 https://github.com/kubernetes/kubernetes/issues/60835
 
 https://medium.com/@joatmon08/playing-with-kubeadm-in-vagrant-machines-part-2-bac431095706
+
+---
+
+### TODO: NodePort respondendo somente no node em que o service foi criado
+https://github.com/kubernetes/kubernetes/issues/58908
+
+https://github.com/kubernetes/kubernetes/issues/70222#issuecomment-450433659
