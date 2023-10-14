@@ -18,7 +18,6 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 # Iniciar kubeadm (rodar somente no node master)
 #sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.56.32
-#sudo systemctl enable --now kubelet
 
 # Criar uma rede para os pods usando wave.
 #kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml

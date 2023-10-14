@@ -2,6 +2,7 @@
 
 ## Etapas necessárias:
 
+### Etapas executadas automaticamente - Vagrant
 1) Criar 3 máquinas virtuais com no mínimo 2cpus e 2GB de memória. Neste repo estou utilizando o Vagrant.
 2) Configurar uma rede local que permita comunicação entre as 3 máquinas e também conexão com a internet.
     
@@ -11,9 +12,11 @@
 
 4) Instalar os binários necessários para criação do cluster, comunicação com a API server e comunicação com o cluster, respectivamente: `kubeadm`, `kubelet` e `kubectl`. Isso está definido no script `install-kubeadm.sh`.
 
-5) **SOMENTE NO NODE MASTER**: iniciar a criação do cluster executando o seguinte comando: `sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.56.32`. O primeiro parâmetro indica a rede interna dos pods, e o segundo indica o ip do servidor da API do Kubernetes, que deverá ser o ip configurado no node master.
+### Etapas que precisam ser executadas manualmente
 
-    5.1)  O comando acima irá gerar uma saída com o comando `kubeadm join`. Certifique-se de copiar este comando caso queira juntar os worker nodes ao node master. Se por acaso perder o comando, pode gerar um token novo usando o comando `kubeadm token create`.
+1) **SOMENTE NO NODE MASTER**: iniciar a criação do cluster executando o seguinte comando: `sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.56.32`. O primeiro parâmetro indica a rede interna dos pods, e o segundo indica o ip do servidor da API do Kubernetes, que deverá ser o ip configurado no node master.
+
+    1.1)  O comando acima irá gerar uma saída com o comando `kubeadm join`. Certifique-se de copiar este comando caso queira juntar os worker nodes ao node master. Se por acaso perder o comando, pode gerar um token novo usando o comando `kubeadm token create`.
 
     Caso precisar do hash do certificado, rodar o seguinte comando: 
 
@@ -24,18 +27,20 @@
    `sudo kubeadm join <ip master node>:<porta master node> --token <token> \
         --discovery-token-ca-cert-hash sha256:<hash do certificado>`
 
-6) **SOMENTE NO NODE MASTER**: copiar o kubeconfig para a pasta do usuário para ser possível executar comandos com o `kubectl` sem a necessidade de sudo:
+2) **SOMENTE NO NODE MASTER**: copiar o kubeconfig para a pasta do usuário para ser possível executar comandos com o `kubectl` sem a necessidade de sudo:
 
 ```bash
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-7) **SOMENTE NO NODE MASTER**: Instalar um componente de rede via add-on para que os pods possam comunicar-se entre eles. Neste setup estou utilizando o Weave, mas outros podem ser encontrados [neste link](https://kubernetes.io/docs/concepts/cluster-administration/addons/).
+3) **SOMENTE NO NODE MASTER**: Instalar um componente de rede via add-on para que os pods possam comunicar-se entre eles. <strike>Neste setup estou utilizando o Weave, mas outros podem ser encontrados [neste link](https://kubernetes.io/docs/concepts/cluster-administration/addons/)</strike>.
     
-    7.1) Após fazer o apply do Weave, é necessário adicionar a variável de ambiente `IPALLOC_RANGE` no container `weave` com o mesmo range de ip escolhido ao criar o cluster com o `kubeadm` no parâmetro `--pod-network-cidr=10.244.0.0/16`.
+    <strike>3.1) Após fazer o apply do Weave, é necessário adicionar a variável de ambiente `IPALLOC_RANGE` no container `weave` com o mesmo range de ip escolhido ao criar o cluster com o `kubeadm` no parâmetro `--pod-network-cidr=10.244.0.0/16`.</strike>
 
-8) **Opcional**: copiar o kubeconfig para os worker nodes. Usar o seguinte comando no node master para copiar o conteúdo do kube config: `kubectl config view --minify --flatten > config`.
+    3.1) Troquei o weave pelo Calico. Ver issue #1 para mais detalhes.
+
+4) **Opcional**: copiar o kubeconfig para os worker nodes. Usar o seguinte comando no node master para copiar o conteúdo do kube config: `kubectl config view --minify --flatten > config`.
 
 
 ---
@@ -92,7 +97,34 @@ https://medium.com/@joatmon08/playing-with-kubeadm-in-vagrant-machines-part-2-ba
 
 ---
 
-### TODO: NodePort respondendo somente no node em que o service foi criado
+## NodePort respondendo somente no node em que o service foi criado (Issue #1 Github)
 https://github.com/kubernetes/kubernetes/issues/58908
 
 https://github.com/kubernetes/kubernetes/issues/70222#issuecomment-450433659
+
+## Solução encontrada
+Substituir o weave pelo calico.
+Após isso foi possível acessar o service do nginx tanto no control-plane quanto no worker node:
+```
+vagrant@kubemaster:~$ curl -i http://192.168.56.32:30007
+HTTP/1.1 200 OK
+Server: nginx/1.25.2
+Date: Sat, 14 Oct 2023 14:07:37 GMT
+Content-Type: text/html
+Content-Length: 615
+Last-Modified: Tue, 15 Aug 2023 17:03:04 GMT
+Connection: keep-alive
+ETag: "64dbafc8-267"
+Accept-Ranges: bytes
+
+vagrant@kubenode01:~$ curl -i http://192.168.56.33:30007
+HTTP/1.1 200 OK
+Server: nginx/1.25.2
+Date: Sat, 14 Oct 2023 14:08:45 GMT
+Content-Type: text/html
+Content-Length: 615
+Last-Modified: Tue, 15 Aug 2023 17:03:04 GMT
+Connection: keep-alive
+ETag: "64dbafc8-267"
+Accept-Ranges: bytes
+```
