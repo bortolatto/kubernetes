@@ -5,6 +5,8 @@
     - name: "Instalar kubeadm"
       ansible.builtin.apt:
         name: ["apt-transport-https", "ca-certificates", "curl"]
+        state: present
+        update_cache: true
     - name: "Adicionar key apt e preparar repositório"
       vars:
         commands:
