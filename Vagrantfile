@@ -23,37 +23,34 @@ Vagrant.configure("2") do |config|
         vb.name = "kubemaster"
         vb.cpus = 2
       end
-      node.vm.provision "shell", path: "dns.sh"
-      node.vm.provision "shell", path: "containerd-install.sh"
-      node.vm.provision "shell", path: "install-kubeadm.sh"
+      config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ansible/containerd-install.yml"        
+      end
+      config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ansible/kubeadm-install.yml"        
+      end
     end
 
-    config.vm.define "kubenode01" do |node|
-      node.vm.box = "ubuntu/focal64"
-      node.vm.network "private_network", ip: "192.168.56.33"
-      node.vm.hostname = "kubenode01"
-      node.vm.provider "virtualbox" do |vb|
-        vb.memory = "2048"
-        vb.name = "kubenode01"
-        vb.cpus = 2
-      end
-      node.vm.provision "shell", path: "dns.sh"
-      node.vm.provision "shell", path: "containerd-install.sh"
-      node.vm.provision "shell", path: "install-kubeadm.sh"
-    end
-
-    config.vm.define "kubenode02" do |node|
-      node.vm.box = "ubuntu/focal64"
-      node.vm.network "private_network", ip: "192.168.56.34"
-      node.vm.hostname = "kubenode02"
-      node.vm.provider "virtualbox" do |vb|
-        vb.memory = "2048"
-        vb.name = "kubenode02"
-        vb.cpus = 2
-      end
-      node.vm.provision "shell", path: "dns.sh"
-      node.vm.provision "shell", path: "containerd-install.sh"
-      node.vm.provision "shell", path: "install-kubeadm.sh"
-    end
+    #config.vm.define "kubenode01" do |node|
+    #  node.vm.box = "ubuntu/focal64"
+    #  node.vm.network "private_network", ip: "192.168.56.33"
+    #  node.vm.hostname = "kubenode01"
+    #  node.vm.provider "virtualbox" do |vb|
+    #    vb.memory = "2048"
+    #    vb.name = "kubenode01"
+    #    vb.cpus = 2
+    #  end
+    #end
+#
+    #config.vm.define "kubenode02" do |node|
+    #  node.vm.box = "ubuntu/focal64"
+    #  node.vm.network "private_network", ip: "192.168.56.34"
+    #  node.vm.hostname = "kubenode02"
+    #  node.vm.provider "virtualbox" do |vb|
+    #    vb.memory = "2048"
+    #    vb.name = "kubenode02"
+    #    vb.cpus = 2
+    #  end
+    #end
 
 end
