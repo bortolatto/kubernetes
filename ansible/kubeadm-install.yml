@@ -1,0 +1,20 @@
+- name: "Instalar o kubeadm"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Instalar kubeadm"
+      ansible.builtin.apt:
+        name: ["apt-transport-https", "ca-certificates", "curl"]
+    - name: "Adicionar key apt e preparar repositório"
+      vars:
+        commands:
+          - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+      ansible.builtin.shell:      
+        cmd: "{{ item }}"
+      loop: "{{ commands }}"
+    - name: "Instalar kubectl, kubeadm e kubelet"
+      ansible.builtin.apt:
+        name: ["kubelet", "kubeadm", "kubectl"]
+        state: present
+        update_cache: true
