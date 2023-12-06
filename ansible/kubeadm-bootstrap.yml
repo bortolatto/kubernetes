@@ -1,0 +1,49 @@
+- name: "Fazer o bootstraping no node master"
+  hosts: kubemaster
+  become: true
+  vars:
+    ip_node_master: 192.168.56.32
+    cidr: 10.244.0.0
+  tasks:
+    - name: "Iniciar kubeadm"
+      ansible.builtin.command:
+        cmd: kubeadm init --pod-network-cidr={{ cidr }}/16 --apiserver-advertise-address={{ ip_node_master }}
+    - name: "Criar diretório .kube"
+      ansible.builtin.file:
+        path: /home/vagrant/.kube
+        state: directory
+    - name: "Copiar config do k8s para todos os usuários"
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+    - name: "Copiar resources do tigera-operator"
+      ansible.builtin.copy:
+        src: /home/eduardo.bortolatto@softplan.com.br/Documents/personal/kubernetes/ansible/tigera-operator.yaml
+        dest: /home/vagrant/tigera-operator.yaml
+    - name: "Copiar resources do calico"
+      ansible.builtin.copy:
+        src: /home/eduardo.bortolatto@softplan.com.br/Documents/personal/kubernetes/ansible/custom-resources.yaml
+        dest: /home/vagrant/custom-resources.yaml
+    - name: "Ajustar cidr calico"    
+      ansible.builtin.command:
+        cmd: sed -i 's/192.168.0.0/{{ cidr }}/' custom-resources.yaml
+    - name: "Ajustar ip do worker node no kubelet"
+      lineinfile:
+        line: "Environment=\"KUBELET_EXTRA_ARGS=--node-ip={{ ip_node_master }}\""
+        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+        state: present
+        insertafter: '^\[Service'
+    - name: "Reiniciar kubelet"
+      ansible.builtin.systemd_service:
+        name: kubelet
+        daemon_reload: true
+        state: restarted
+    - name: "Aplicar tigera operator" 
+      become: false
+      ansible.builtin.command:
+        cmd: kubectl create -f tigera-operator.yaml
+    - name: "Aplicar calico custom resources" 
+      become: false
+      ansible.builtin.command:
+        cmd: kubectl create -f custom-resources.yaml

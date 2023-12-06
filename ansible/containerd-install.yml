@@ -60,7 +60,7 @@
               SystemdCgroup = true
           EOF
       notify:
-        - Reiniciar containerd            
+        - Reiniciar containerd
   handlers:
     - name: "Apply sysctl params without reboot"
       become: true
