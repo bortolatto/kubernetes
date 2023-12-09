@@ -3,6 +3,10 @@
 - name: "Iniciar kubeadm"
   ansible.builtin.command:
     cmd: kubeadm init --pod-network-cidr={{ cidr }}/16 --apiserver-advertise-address={{ ansible_facts['enp0s8']['ipv4']['address'] }} --ignore-preflight-errors=all
+- name: "Criar diretório files no cluster-join role"
+  ansible.builtin.file:
+    path: /vagrant/ansible/roles/cluster-join/files
+    state: directory    
 - name: Armazenar comando join
   ansible.builtin.shell:
     cmd: kubeadm token create --print-join-command > /vagrant/ansible/roles/cluster-join/files/kubeadmjoin
