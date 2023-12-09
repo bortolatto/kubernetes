@@ -1,0 +1,4 @@
+- hosts: all
+  tasks:
+    - ansible.builtin.debug:
+        msg: "{{ ansible_facts['enp0s8']['ipv4']['address'] }}"

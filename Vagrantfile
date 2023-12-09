@@ -24,13 +24,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
       end
       config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/containerd-install.yml"        
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/kubeadm-install.yml"        
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/kubeadm-bootstrap.yml"        
+        ansible.playbook = "ansible/playbooks/echo.yml"
       end
     end
 
@@ -44,13 +38,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
       end
       config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/containerd-install.yml"        
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/kubeadm-install.yml"        
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/copy-kubeconfig.yml"        
+        ansible.playbook = "ansible/playbooks/echo.yml"
       end
     end
 
@@ -64,13 +52,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 2
       end
       config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/containerd-install.yml"
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/kubeadm-install.yml"
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/copy-kubeconfig.yml"        
+        ansible.playbook = "ansible/playbooks/echo.yml"
       end
     end
 

@@ -2,12 +2,14 @@
   hosts: kubemaster
   become: true
   vars:
-    ip_node_master: 192.168.56.32
     cidr: 10.244.0.0
   tasks:
     - name: "Iniciar kubeadm"
       ansible.builtin.command:
-        cmd: kubeadm init --pod-network-cidr={{ cidr }}/16 --apiserver-advertise-address={{ ip_node_master }}
+        cmd: kubeadm init --pod-network-cidr={{ cidr }}/16 --apiserver-advertise-address={{ ansible_facts['enp0s8']['ipv4']['address'] }}
+    - name: Armazenar comando join
+      ansible.builtin.shell:
+        cmd: kubeadm token create --print-join-command > /vagrant/kubeadmjoin
     - name: "Criar diretório .kube"
       ansible.builtin.file:
         path: /home/vagrant/.kube
@@ -35,7 +37,7 @@
         cmd: sed -i 's/192.168.0.0/{{ cidr }}/' custom-resources.yaml
     - name: "Ajustar ip do worker node no kubelet"
       lineinfile:
-        line: "Environment=\"KUBELET_EXTRA_ARGS=--node-ip={{ ip_node_master }}\""
+        line: "Environment=\"KUBELET_EXTRA_ARGS=--node-ip={{ ansible_facts['enp0s8']['ipv4']['address'] }}\""
         path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
         state: present
         insertafter: '^\[Service'
