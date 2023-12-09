@@ -17,6 +17,11 @@
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
         remote_src: yes
+    - name: Copiar kubeconfig para /vagrant - diretório compartilhado
+      ansible.builtin.copy:
+        src: /home/vagrant/.kube/config
+        dest: /vagrant/config
+        remote_src: true
     - name: "Copiar resources do tigera-operator"
       ansible.builtin.copy:
         src: /home/eduardo.bortolatto@softplan.com.br/Documents/personal/kubernetes/ansible/tigera-operator.yaml
