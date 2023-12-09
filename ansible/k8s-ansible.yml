@@ -1,0 +1,24 @@
+---
+- name: "Instalação e configuração do container runtime e kubeadm"
+  hosts: all
+  roles: 
+    - instalar-containerd
+
+- name: "Instalar o kubeadm"
+  hosts: all
+  become: true
+  roles: 
+    - instalar-kubeadm
+
+- name: "Fazer o bootstraping no node master"
+  hosts: kubemaster
+  become: true
+  roles: 
+    - bootstrap-kubeadm
+
+- name: Copiar kubeconfig
+  hosts:
+    - kubenode01
+    - kubenode02
+  roles: 
+    - cluster-join
