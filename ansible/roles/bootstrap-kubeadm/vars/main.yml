@@ -1,0 +1,3 @@
+---
+# vars file for bootstrap-kubeadm
+cidr: 10.244.0.0
