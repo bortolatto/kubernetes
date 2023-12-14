@@ -1,0 +1,10 @@
+---
+- name: "Parte 1 - instalar containerd"
+  hosts: kubenode01
+  roles: 
+    - instalar-containerd
+
+- name: "Parte 2 - instalar docker"
+  hosts: kubenode01
+  roles: 
+    - instalar-docker

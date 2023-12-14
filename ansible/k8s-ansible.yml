@@ -4,6 +4,11 @@
   roles: 
     - instalar-containerd
 
+- name: "Configurar container runtime"
+  hosts: all
+  roles: 
+    - configurar-container-runtime
+
 - name: "Instalar o kubeadm"
   hosts: all
   become: true

@@ -10,3 +10,4 @@ config
 /dataSources.local.xml
 .idea
 kubeadmjoin
+**/.terraform**
