@@ -1,2 +1,3 @@
 ---
 # vars file for instalar-docker
+username_group_docker: "vagrant"

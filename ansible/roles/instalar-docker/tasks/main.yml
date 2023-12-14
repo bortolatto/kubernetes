@@ -50,3 +50,26 @@
     name: docker-compose-plugin
     state: present
     update_cache: true
+- name: "Configurar max virtual memory"
+  become: true
+  ansible.builtin.lineinfile:
+    line: vm.max_map_count=262144
+    path: /etc/sysctl.conf
+    insertafter: "EOF"
+- name: "Aplicar valor sem reiniciar"    
+  become: true
+  ansible.builtin.command: sysctl -p /etc/sysctl.conf
+- name: "Adiciona usuário no docker group"
+  become: true
+  ansible.builtin.user:
+    name: "{{ username_group_docker }}"
+    groups: docker
+    append: true
+- name: "Copiar docker-compose.yml"
+  copy:
+    src: elasticsearch.yml
+    dest: /home/vagrant/elasticsearch.yml
+- name: Reiniciar conexão
+  ansible.builtin.meta: reset_connection
+- name: "Iniciar elastic service"  
+  command: docker compose -f elasticsearch.yml up -d

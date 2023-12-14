@@ -1,0 +1,10 @@
+version: '2'
+services:
+    elasticsearch:            
+        image: elasticsearch:6.8.8
+        ports:
+            - 9200:9200
+            - 9300:9300              
+        environment:
+            - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+            - "xpack.security.enabled=false"
