@@ -5,14 +5,14 @@
     name: ["apt-transport-https", "ca-certificates", "curl"]
     state: present
     update_cache: true
-- name: "Adicionar key apt e preparar repositório"
-  vars:
-    commands:
-      - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-      - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  ansible.builtin.shell:      
-    cmd: "{{ item }}"
-  loop: "{{ commands }}"
+- name: "Prepara repositorio"
+  ansible.builtin.lineinfile:
+    line: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /"
+    create: true
+    path: /etc/apt/sources.list.d/kubernetes.list
+- name: "Baixa chave pública"
+  ansible.builtin.shell:
+    cmd: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 - name: "Instalar kubectl, kubeadm e kubelet"
   ansible.builtin.apt:
     name: ["kubelet", "kubeadm", "kubectl"]

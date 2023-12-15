@@ -1,2 +1,8 @@
 ---
 # handlers file for configurar-container-runtime
+- name: "Apply sysctl params without reboot"
+  become: true
+  ansible.builtin.shell: "sysctl --system"
+- name: "Reiniciar containerd"
+  become: true
+  ansible.builtin.service: name=containerd state=restarted

@@ -12,7 +12,7 @@
   become: true
   lineinfile:
     line: "Environment=\"KUBELET_EXTRA_ARGS=--node-ip={{ ansible_facts['enp0s8']['ipv4']['address'] }}\""
-    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    path: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
     state: present
     insertafter: '^\[Service'
 - name: "Reiniciar kubelet"
