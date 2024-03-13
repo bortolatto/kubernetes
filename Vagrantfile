@@ -14,6 +14,17 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/focal64"
 
+    config.vm.define "ansible" do |node|
+      node.vm.box = "ubuntu/focal64"
+      node.vm.network "private_network", ip: "192.168.56.31"
+      node.vm.hostname = "ansible"
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = "2048"
+        vb.name = "ansible"
+        vb.cpus = 2
+      end  
+    end
+
     config.vm.define "kubemaster" do |node|
       node.vm.box = "ubuntu/focal64"
       node.vm.network "private_network", ip: "192.168.56.32"
@@ -22,10 +33,7 @@ Vagrant.configure("2") do |config|
         vb.memory = "2048"
         vb.name = "kubemaster"
         vb.cpus = 2
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/playbooks/echo.yml"
-      end
+      end  
     end
 
     config.vm.define "kubenode01" do |node|
@@ -36,10 +44,7 @@ Vagrant.configure("2") do |config|
         vb.memory = "2048"
         vb.name = "kubenode01"
         vb.cpus = 2
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/playbooks/echo.yml"
-      end
+      end  
     end
 
     config.vm.define "kubenode02" do |node|
@@ -50,10 +55,7 @@ Vagrant.configure("2") do |config|
         vb.memory = "2048"
         vb.name = "kubenode02"
         vb.cpus = 2
-      end
-      config.vm.provision "ansible" do |ansible|
-        ansible.playbook = "ansible/playbooks/echo.yml"
-      end
+      end  
     end
 
 end
